@@ -1,9 +1,9 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Workspace - Portable Edition</title>
+    <title>AI Workspace - Multi-AI Assistant</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -13,25 +13,27 @@ DOCTYPE html>
             --user-msg-bg: #007bff;
             --user-text: #ffffff;
             --ai-msg-bg: #f0f0f0;
-            --accent: #10a37f;
+            --groq-color: #9d4edd;
+            --gemini-color: #4285f4;
+            --deepseek-color: #06b6d4;
             --hover-bg: #e0e0e0;
             --active-item: #e6f7ff;
         }
 
-
         body.dark-mode {
-            --bg-color: #343541;
-            --sidebar-bg: #202123;
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #2d2d2d;
             --text-color: #ececf1;
             --border-color: #4d4d4f;
-            --user-msg-bg: #19c37d;
+            --user-msg-bg: #007bff;
             --user-text: #ffffff;
-            --ai-msg-bg: #444654;
-            --accent: #19c37d;
-            --hover-bg: #2d2d30;
+            --ai-msg-bg: #38383e;
+            --groq-color: #c77dff;
+            --gemini-color: #669df6;
+            --deepseek-color: #22d3ee;
+            --hover-bg: #3e3e3e;
             --active-item: #2f3542;
         }
-
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -44,10 +46,9 @@ DOCTYPE html>
             transition: background-color 0.3s, color 0.3s;
         }
 
-
-        /* Sidebar */
+        /* Sidebar - FULLY SCROLLABLE */
         .sidebar {
-            width: 260px;
+            width: 300px;
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--border-color);
             padding: 20px;
@@ -55,8 +56,10 @@ DOCTYPE html>
             flex-direction: column;
             gap: 15px;
             flex-shrink: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
         }
-
 
         .logo {
             font-weight: bold;
@@ -64,9 +67,53 @@ DOCTYPE html>
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--accent);
+            color: var(--gemini-color);
         }
 
+        .ai-model-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .model-btn {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .model-btn.active {
+            border-color: currentColor;
+            font-weight: bold;
+        }
+
+        .model-btn.groq {
+            color: var(--groq-color);
+        }
+
+        .model-btn.gemini {
+            color: var(--gemini-color);
+        }
+
+        .model-btn.deepseek {
+            color: var(--deepseek-color);
+        }
 
         .control-group {
             display: flex;
@@ -74,16 +121,15 @@ DOCTYPE html>
             gap: 5px;
         }
 
-
         label {
             font-size: 0.8rem;
             font-weight: 600;
             opacity: 0.8;
             text-transform: uppercase;
+            margin-top: 5px;
         }
 
-
-        select, button {
+        select, button, input {
             padding: 10px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -92,26 +138,38 @@ DOCTYPE html>
             cursor: pointer;
             font-size: 0.9rem;
             transition: 0.2s;
+            width: 100%;
+            box-sizing: border-box;
         }
 
+        select {
+            cursor: pointer;
+        }
 
         button:hover {
             opacity: 0.8;
-            border-color: var(--accent);
         }
-
 
         button.primary {
-            background-color: var(--accent);
+            background-color: var(--gemini-color);
             color: white;
             border: none;
+            width: auto;
+            padding: 10px 20px;
         }
 
+        .api-key-input {
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
 
-        /* Session List (Scrollable Sidebar Area) */
+        .api-key-input::placeholder {
+            color: #888;
+        }
+
+        /* Session List */
         .session-list-container {
             flex: 1;
-            overflow-y: auto;
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
             margin: 10px 0;
@@ -120,7 +178,6 @@ DOCTYPE html>
             flex-direction: column;
             gap: 5px;
         }
-
 
         .session-item {
             padding: 10px;
@@ -135,29 +192,16 @@ DOCTYPE html>
             color: var(--text-color);
         }
 
-
         .session-item:hover {
             background-color: var(--hover-bg);
         }
 
-
         .session-item.active {
             background-color: var(--active-item);
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: var(--gemini-color);
+            color: var(--gemini-color);
             font-weight: bold;
         }
-
-
-        /* Scrollbar Styling */
-        .session-list-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .session-list-container::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 3px;
-        }
-
 
         /* Main Chat Area */
         .chat-container {
@@ -166,7 +210,6 @@ DOCTYPE html>
             flex-direction: column;
             height: 100%;
         }
-
 
         .messages-area {
             flex: 1;
@@ -177,7 +220,6 @@ DOCTYPE html>
             gap: 20px;
             scroll-behavior: smooth;
         }
-
 
         .message {
             display: flex;
@@ -190,14 +232,12 @@ DOCTYPE html>
             word-wrap: break-word;
         }
 
-
         .message.user {
             align-self: flex-end;
             background-color: var(--user-msg-bg);
             color: var(--user-text);
             border-bottom-right-radius: 2px;
         }
-
 
         .message.ai {
             align-self: flex-start;
@@ -207,15 +247,63 @@ DOCTYPE html>
             border: 1px solid var(--border-color);
         }
 
+        .message.ai.groq {
+            border-left: 4px solid var(--groq-color);
+        }
+
+        .message.ai.gemini {
+            border-left: 4px solid var(--gemini-color);
+        }
+
+        .message.ai.deepseek {
+            border-left: 4px solid var(--deepseek-color);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .ai-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+
+        .ai-icon.groq {
+            background-color: var(--groq-color);
+            color: white;
+        }
+
+        .ai-icon.gemini {
+            background-color: var(--gemini-color);
+            color: white;
+        }
+
+        .ai-icon.deepseek {
+            background-color: var(--deepseek-color);
+            color: white;
+        }
+
+        .ai-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
 
         .mode-badge {
             font-size: 0.7rem;
             text-transform: uppercase;
             font-weight: bold;
             opacity: 0.7;
-            margin-bottom: 5px;
+            margin-top: 5px;
         }
-
 
         /* Input Area */
         .input-area {
@@ -226,7 +314,6 @@ DOCTYPE html>
             gap: 10px;
             align-items: center;
         }
-
 
         input[type="text"] {
             flex: 1;
@@ -239,12 +326,10 @@ DOCTYPE html>
             outline: none;
         }
 
-
         input[type="text"]:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
+            border-color: var(--gemini-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
         }
-
 
         /* Media Handling */
         .media-preview {
@@ -255,7 +340,7 @@ DOCTYPE html>
             border: 1px solid rgba(255,255,255,0.2);
             display: block;
         }
-       
+        
         /* Code Blocks */
         pre {
             background: #1e1e1e;
@@ -266,46 +351,175 @@ DOCTYPE html>
             font-family: 'Consolas', 'Monaco', monospace;
             margin: 10px 0;
         }
-       
+        
         code {
             font-family: 'Consolas', 'Monaco', monospace;
             background: rgba(0,0,0,0.1);
             padding: 2px 4px;
             border-radius: 3px;
         }
-       
+        
         .dark-mode code {
             background: rgba(255,255,255,0.1);
         }
 
-
         /* Loading Animation */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 0;
+        }
+
         .typing-indicator span {
             display: inline-block;
-            width: 6px;
-            height: 6px;
-            background-color: currentColor;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out both;
-            margin: 0 2px;
         }
+        
+        .typing-indicator.groq span {
+            background-color: var(--groq-color);
+        }
+        
+        .typing-indicator.gemini span {
+            background-color: var(--gemini-color);
+        }
+        
+        .typing-indicator.deepseek span {
+            background-color: var(--deepseek-color);
+        }
+        
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-       
+        
         @keyframes typing {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
+        }
+
+        /* Sidebar Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        .messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .messages-area::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 3px;
+        }
+
+        /* Model category labels */
+        .model-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin-top: 8px;
+            margin-bottom: 3px;
+            padding-left: 5px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body class="dark-mode">
 
-
 <div class="sidebar">
     <div class="logo">
-        <span>🤖</span> AI Assistant Pro
+        <span>✨</span> Multi-AI Assistant
     </div>
 
+    <div class="ai-model-selector">
+        <button class="model-btn gemini active" onclick="switchAI('gemini')">
+            <span>🔷</span> Google Gemini
+        </button>
+        <button class="model-btn groq" onclick="switchAI('groq')">
+            <span>⚡</span> Groq (Fast)
+        </button>
+        <button class="model-btn deepseek" onclick="switchAI('deepseek')">
+            <span>🌊</span> DeepSeek
+        </button>
+    </div>
+
+    <div class="control-group">
+        <label>API Keys</label>
+        <input type="text" id="groqKey" class="api-key-input" 
+               placeholder="Groq API Key (Required)" 
+               value="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">
+        <input type="text" id="geminiKey" class="api-key-input" 
+               placeholder="Gemini API Key (Optional)">
+        <input type="text" id="deepseekKey" class="api-key-input" 
+               placeholder="DeepSeek API Key (Optional)">
+    </div>
+
+    <!-- Groq Model Selector -->
+    <div class="control-group">
+        <label>Groq Model</label>
+        <select id="groqModelSelect">
+            <!-- Meta Models -->
+            <optgroup label="Meta">
+                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+                <option value="meta-llama/llama-4-maverick-17b-128e">llama-4-maverick-17b-128e</option>
+                <option value="meta-llama/llama-4-scout-17b-16e-inst">llama-4-scout-17b-16e-inst</option>
+                <option value="meta-llama/llama-guard-4-12b">llama-guard-4-12b</option>
+                <option value="meta-llama/llama-prompt-guard-2-22m">llama-prompt-guard-2-22m</option>
+                <option value="meta-llama/llama-prompt-guard-2-86m">llama-prompt-guard-2-86m</option>
+                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+            </optgroup>
+            
+            <!-- Groq Models -->
+            <optgroup label="Groq">
+                <option value="groq/compound">groq/compound</option>
+                <option value="groq/compound-mini">groq/compound-mini</option>
+            </optgroup>
+            
+            <!-- OpenAI Models -->
+            <optgroup label="OpenAI">
+                <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
+                <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
+                <option value="openai/gpt-oss-safeguard-20b">gpt-oss-safeguard-20b</option>
+                <option value="whisper-large-v3">whisper-large-v3</option>
+                <option value="whisper-large-v3-turbo">whisper-large-v3-turbo</option>
+            </optgroup>
+            
+            <!-- Alibaba Cloud Models -->
+            <optgroup label="Alibaba Cloud">
+                <option value="qwen/qwen3-32b">qwen3-32b</option>
+            </optgroup>
+            
+            <!-- Canopy Labs Models -->
+            <optgroup label="Canopy Labs">
+                <option value="canopylabs/orpheus-arabic-saudi">orpheus-arabic-saudi</option>
+                <option value="canopylabs/orpheus-v1-english">orpheus-v1-english</option>
+            </optgroup>
+            
+            <!-- Moonshot AI Models -->
+            <optgroup label="Moonshot AI">
+                <option value="moonshotai/kimi-k2-instruct">kimi-k2-instruct</option>
+                <option value="moonshotai/kimi-k2-instruct-0905">kimi-k2-instruct-0905</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- Gemini Model Selector -->
+    <div class="control-group">
+        <label>Gemini Model</label>
+        <select id="geminiModelSelect">
+            <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
+            <option value="gemini-2.0-pro-exp">gemini-2.0-pro-exp</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+        </select>
+    </div>
 
     <div class="control-group">
         <label>AI Mode</label>
@@ -313,31 +527,28 @@ DOCTYPE html>
             <option value="fast">⚡ Fast Mode</option>
             <option value="thinking">🧠 Thinking Mode</option>
             <option value="coding">💻 Coding Mode</option>
-            <option value="stock">📈 Stock Mode</option>
+            <option value="creative">🎨 Creative Mode</option>
         </select>
     </div>
 
-
     <div class="control-group">
-        <label>Generation</label>
+        <label>Actions</label>
         <select id="generationAction" onchange="handleGenerationChange(this)">
             <option value="" disabled selected>Select Action...</option>
             <option value="new">✨ Start New Chat</option>
+            <option value="askAll">🚀 Ask All AIs</option>
         </select>
     </div>
 
-
     <div class="control-group">
         <label>Theme</label>
-        <button onclick="document.body.classList.toggle('dark-mode')">🌓 Toggle Dark Mode</button>
+        <button onclick="toggleDarkMode()">🌓 Toggle Dark Mode</button>
     </div>
-
 
     <label style="margin-top: 10px;">Chat History</label>
     <div class="session-list-container" id="sessionList">
         <!-- Chat sessions will appear here -->
     </div>
-
 
     <div class="control-group">
         <label>Data Management</label>
@@ -345,57 +556,104 @@ DOCTYPE html>
         <button onclick="document.getElementById('fileInput').click()">📂 Load All (JSON)</button>
         <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="importAllChats(event)">
     </div>
-   
-    <div style="font-size: 10px; opacity: 0.5; text-align: center;">
-        Powered by Groq
-    </div>
 </div>
-
 
 <div class="chat-container">
     <div class="messages-area" id="chatHistory">
         <!-- Messages will appear here -->
-        <div class="message ai">
-            <div class="mode-badge">SYSTEM</div>
-            <div>Welcome! I am ready to help. Select a mode, attach images, or just start typing.</div>
+        <div class="message ai gemini">
+            <div class="ai-header">
+                <div class="ai-icon gemini">G</div>
+                <div class="ai-name">Gemini</div>
+            </div>
+            <div>Welcome! I'm your AI assistant. Choose between <strong>Gemini</strong>, <strong>Groq</strong>, or <strong>DeepSeek</strong> from the sidebar.</div>
         </div>
     </div>
 
-
     <div class="input-area">
-        <input type="file" id="mediaUpload" accept="image/*,video/*" style="display: none;" onchange="handleFileSelect()">
-        <button onclick="document.getElementById('mediaUpload').click()" title="Attach Image/Video">📎</button>
-        <div id="fileIndicator" style="font-size: 0.8rem; display:none; color: var(--accent);">File Selected</div>
-       
+        <input type="file" id="mediaUpload" accept="image/*" style="display: none;" onchange="handleFileSelect()">
+        <button onclick="document.getElementById('mediaUpload').click()" title="Attach Image">📎</button>
+        <div id="fileIndicator" style="font-size: 0.8rem; display:none; color: var(--gemini-color);">Image Selected</div>
+        
         <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleEnter(event)">
         <button class="primary" onclick="sendMessage()">Send</button>
     </div>
 </div>
 
-
 <script>
     // --- CONFIGURATION ---
-    const API_KEY = "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";
-    const PROXY_URL = "https://corsproxy.io/?";
-    const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
-   
-    // --- STATE ---
-    // Structure: [{ id: 1, name: "Chat 1", logs: [] }]
+    let currentAI = 'gemini'; // gemini, groq, or deepseek
     let sessions = [];
     let currentSessionId = null;
     let currentFileBase64 = null;
     let currentFileType = null;
 
-
     // --- INITIALIZATION ---
     window.onload = function() {
         startNewChat();
+        loadAPIKeys();
+        updatePrimaryButtonColor();
+        
+        // Set default models
+        document.getElementById('groqModelSelect').value = 'llama-3.3-70b-versatile';
+        document.getElementById('geminiModelSelect').value = 'gemini-2.0-flash-exp';
     };
 
+    // --- AI MODEL SWITCHING ---
+    function switchAI(aiModel) {
+        currentAI = aiModel;
+        
+        // Update active button
+        document.querySelectorAll('.model-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`.model-btn.${aiModel}`).classList.add('active');
+        
+        // Update primary button color
+        updatePrimaryButtonColor();
+    }
+    
+    function updatePrimaryButtonColor() {
+        const primaryBtn = document.querySelector('.primary');
+        if (currentAI === 'groq') {
+            primaryBtn.style.backgroundColor = 'var(--groq-color)';
+        } else if (currentAI === 'deepseek') {
+            primaryBtn.style.backgroundColor = 'var(--deepseek-color)';
+        } else {
+            primaryBtn.style.backgroundColor = 'var(--gemini-color)';
+        }
+    }
+
+    // --- API KEY MANAGEMENT ---
+    function loadAPIKeys() {
+        const geminiKey = localStorage.getItem('geminiKey');
+        const groqKey = localStorage.getItem('groqKey');
+        const deepseekKey = localStorage.getItem('deepseekKey');
+        
+        if (geminiKey) document.getElementById('geminiKey').value = geminiKey;
+        if (groqKey) document.getElementById('groqKey').value = groqKey;
+        if (deepseekKey) document.getElementById('deepseekKey').value = deepseekKey;
+        
+        // Save on change
+        document.getElementById('geminiKey').addEventListener('change', saveAPIKeys);
+        document.getElementById('groqKey').addEventListener('change', saveAPIKeys);
+        document.getElementById('deepseekKey').addEventListener('change', saveAPIKeys);
+    }
+
+    function saveAPIKeys() {
+        localStorage.setItem('geminiKey', document.getElementById('geminiKey').value);
+        localStorage.setItem('groqKey', document.getElementById('groqKey').value);
+        localStorage.setItem('deepseekKey', document.getElementById('deepseekKey').value);
+    }
+
+    function getAPIKey(aiModel) {
+        if (aiModel === 'gemini') return document.getElementById('geminiKey').value;
+        if (aiModel === 'groq') return document.getElementById('groqKey').value;
+        if (aiModel === 'deepseek') return document.getElementById('deepseekKey').value;
+        return '';
+    }
 
     // --- SESSION MANAGEMENT ---
-
-
     function startNewChat() {
         const id = Date.now();
         const newSession = {
@@ -407,49 +665,451 @@ DOCTYPE html>
         switchSession(id);
     }
 
-
     function switchSession(id) {
         currentSessionId = id;
-       
-        // Find session data
         const session = sessions.find(s => s.id === id);
         if (!session) return;
 
-
-        // Clear UI
         const historyDiv = document.getElementById('chatHistory');
         historyDiv.innerHTML = "";
-       
-        // Add Welcome Message if empty
+        
         if (session.logs.length === 0) {
             addMessageToUI({
+                ai: 'gemini',
                 role: 'ai',
-                mode: 'SYSTEM',
                 content: 'New chat started. How can I help?'
             });
         } else {
-            // Re-render logs
             session.logs.forEach(msg => addMessageToUI(msg));
         }
-
 
         renderSessionList();
     }
 
-
     function handleGenerationChange(select) {
         if (select.value === 'new') {
             startNewChat();
+        } else if (select.value === 'askAll') {
+            askAllAIs();
         }
-        // Reset dropdown
         select.value = "";
     }
 
+    // --- CHAT FUNCTIONS ---
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function handleFileSelect() {
+        const fileInput = document.getElementById('mediaUpload');
+        const indicator = document.getElementById('fileIndicator');
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                currentFileBase64 = e.target.result;
+                currentFileType = file.type;
+                indicator.style.display = 'block';
+                indicator.innerText = "Image Attached";
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const text = input.value;
+        
+        if (!text && !currentFileBase64) return;
+
+        const session = sessions.find(s => s.id === currentSessionId);
+        if (!session) return;
+
+        // Add user message
+        const userMsg = {
+            ai: currentAI,
+            role: "user",
+            content: text,
+            media: currentFileBase64,
+            mediaType: currentFileType
+        };
+        
+        addMessageToUI(userMsg);
+        session.logs.push(userMsg);
+        
+        if (session.logs.filter(m => m.role === 'user').length === 1) {
+            updateSessionName(text || "Image Upload");
+        }
+
+        // Clear inputs
+        input.value = "";
+        document.getElementById('mediaUpload').value = "";
+        document.getElementById('fileIndicator').style.display = 'none';
+        
+        const tempMedia = currentFileBase64;
+        const tempType = currentFileType;
+        currentFileBase64 = null;
+        currentFileType = null;
+
+        // Show loading indicator
+        showLoadingIndicator(currentAI);
+
+        try {
+            let response;
+            const mode = document.getElementById('modeSelect').value;
+            
+            if (currentAI === 'gemini') {
+                response = await callGeminiAPI(text, tempMedia, tempType, mode, session);
+            } else if (currentAI === 'groq') {
+                response = await callGroqAPI(text, mode, session);
+            } else if (currentAI === 'deepseek') {
+                response = await callDeepSeekAPI(text, mode, session);
+            }
+
+            removeLoadingIndicator();
+            
+            const aiMsg = {
+                ai: currentAI,
+                role: "ai",
+                content: response
+            };
+            
+            addMessageToUI(aiMsg);
+            session.logs.push(aiMsg);
+
+        } catch (error) {
+            removeLoadingIndicator();
+            addMessageToUI({
+                ai: currentAI,
+                role: "ai",
+                content: `Error: ${error.message}. Please check your API key and connection.`
+            });
+            console.error(error);
+        }
+    }
+
+    // --- API CALL FUNCTIONS ---
+    
+    // Gemini API call
+    async function callGeminiAPI(text, media, mediaType, mode, session) {
+        const apiKey = getAPIKey('gemini');
+        if (!apiKey) {
+            // If no Gemini key, fall back to Groq if available
+            const groqKey = getAPIKey('groq');
+            if (groqKey) {
+                return await callGroqAPI(text, mode, session);
+            }
+            throw new Error("No Gemini API key set. Please add a Gemini key or use Groq.");
+        }
+        
+        // Get selected Gemini model
+        const MODEL_NAME = document.getElementById('geminiModelSelect').value;
+        const URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
+        
+        // System instruction based on mode
+        let systemInstructionText = "You are a helpful assistant.";
+        if (mode === "coding") systemInstructionText = "You are an expert software engineer.";
+        if (mode === "creative") systemInstructionText = "You are a creative writer.";
+        if (mode === "thinking") systemInstructionText = "Think step-by-step.";
+        if (mode === "fast") systemInstructionText = "Be concise and direct.";
+
+        // Build conversation history
+        let contents = [];
+        const recentHistory = session.logs.filter(m => m.ai === 'gemini' && m.role !== 'system').slice(-6);
+        
+        recentHistory.forEach(m => {
+            if (m.role === 'user') {
+                let parts = [{ text: m.content }];
+                if (m.media) {
+                    const base64Data = m.media.split(',')[1];
+                    parts.push({
+                        inlineData: {
+                            mimeType: m.mediaType,
+                            data: base64Data
+                        }
+                    });
+                }
+                contents.push({
+                    role: 'user',
+                    parts: parts
+                });
+            } else if (m.role === 'ai') {
+                contents.push({
+                    role: 'model',
+                    parts: [{ text: m.content }]
+                });
+            }
+        });
+
+        // Add current message
+        let currentParts = [];
+        if (text) currentParts.push({ text: text });
+        
+        if (media) {
+            const base64Data = media.split(',')[1];
+            currentParts.push({
+                inlineData: {
+                    mimeType: mediaType,
+                    data: base64Data
+                }
+            });
+        }
+        
+        if (currentParts.length === 0 && media) {
+            currentParts.push({ text: "Analyze this image." });
+        }
+
+        contents.push({
+            role: "user",
+            parts: currentParts
+        });
+
+        const payload = {
+            contents: contents,
+            systemInstruction: {
+                parts: [{ text: systemInstructionText }]
+            }
+        };
+
+        const response = await fetch(URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.candidates?.[0]?.content?.parts) {
+            return data.candidates[0].content.parts.map(p => p.text).join('');
+        }
+        
+        throw new Error("No response generated from Gemini.");
+    }
+
+    // Groq API call
+    async function callGroqAPI(text, mode, session) {
+        const apiKey = getAPIKey('groq');
+        if (!apiKey) throw new Error("Groq API key not set");
+        
+        const apiEndpoint = "https://api.groq.com/openai/v1/chat/completions";
+        
+        // Get selected Groq model
+        const groqModel = document.getElementById('groqModelSelect').value;
+
+        // Build conversation history
+        const messages = [];
+        const recentHistory = session.logs.filter(m => m.ai === 'groq').slice(-6);
+        
+        recentHistory.forEach(m => {
+            messages.push({
+                role: m.role === 'user' ? 'user' : 'assistant',
+                content: m.content
+            });
+        });
+
+        // Add current message
+        messages.push({
+            role: 'user',
+            content: text
+        });
+
+        // Set temperature based on mode
+        let temperature = 0.7;
+        if (mode === 'creative') temperature = 0.9;
+        if (mode === 'fast') temperature = 0.5;
+        if (mode === 'thinking') temperature = 0.3;
+        if (mode === 'coding') temperature = 0.2;
+
+        const payload = {
+            model: groqModel,
+            messages: messages,
+            stream: false,
+            temperature: temperature,
+            max_tokens: 2048
+        };
+
+        const response = await fetch(apiEndpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Groq API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.choices?.[0]?.message?.content) {
+            return data.choices[0].message.content;
+        }
+        
+        throw new Error("Unexpected response format from Groq API");
+    }
+
+    // DeepSeek API call
+    async function callDeepSeekAPI(text, mode, session) {
+        const apiKey = getAPIKey('deepseek');
+        if (!apiKey) throw new Error("DeepSeek API key not set");
+
+        // Build conversation history
+        const messages = [];
+        const recentHistory = session.logs.filter(m => m.ai === 'deepseek').slice(-6);
+        
+        recentHistory.forEach(m => {
+            messages.push({
+                role: m.role === 'user' ? 'user' : 'assistant',
+                content: m.content
+            });
+        });
+
+        // Add current message
+        messages.push({
+            role: 'user',
+            content: text
+        });
+
+        const payload = {
+            model: "deepseek-chat",
+            messages: messages,
+            stream: false
+        };
+
+        const response = await fetch('https://api.deepseek.com/chat/completions', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`DeepSeek API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.choices?.[0]?.message?.content) {
+            return data.choices[0].message.content;
+        }
+        
+        throw new Error("Unexpected response format from DeepSeek API");
+    }
+
+    // --- UI FUNCTIONS ---
+    function showLoadingIndicator(aiModel) {
+        const historyDiv = document.getElementById('chatHistory');
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = `message ai ${aiModel}`;
+        loadingDiv.id = 'loading-indicator';
+        
+        loadingDiv.innerHTML = `
+            <div class="ai-header">
+                <div class="ai-icon ${aiModel}">${aiModel[0].toUpperCase()}</div>
+                <div class="ai-name">${aiModel.charAt(0).toUpperCase() + aiModel.slice(1)}</div>
+            </div>
+            <div class="typing-indicator ${aiModel}">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        
+        historyDiv.appendChild(loadingDiv);
+        scrollToBottom();
+    }
+
+    function removeLoadingIndicator() {
+        const loadingDiv = document.getElementById('loading-indicator');
+        if (loadingDiv) loadingDiv.remove();
+    }
+
+    function addMessageToUI(msg) {
+        const historyDiv = document.getElementById('chatHistory');
+        const div = document.createElement('div');
+        
+        if (msg.role === 'user') {
+            div.className = 'message user';
+            let contentHTML = `<div>${escapeHTML(msg.content)}</div>`;
+            if (msg.media) {
+                contentHTML = `<img src="${msg.media}" class="media-preview"><br>` + contentHTML;
+            }
+            div.innerHTML = contentHTML;
+        } else {
+            div.className = `message ai ${msg.ai || 'gemini'}`;
+            
+            let html = `<div class="ai-header">
+                <div class="ai-icon ${msg.ai || 'gemini'}">${(msg.ai || 'gemini')[0].toUpperCase()}</div>
+                <div class="ai-name">${msg.ai ? msg.ai.charAt(0).toUpperCase() + msg.ai.slice(1) : 'AI'}</div>
+            </div>`;
+            
+            if (msg.media) {
+                html += `<img src="${msg.media}" class="media-preview"><br>`;
+            }
+            
+            html += `<div>${formatMessage(msg.content)}</div>`;
+            div.innerHTML = html;
+        }
+        
+        historyDiv.appendChild(div);
+        scrollToBottom();
+    }
+
+    function formatMessage(text) {
+        if (!text) return '';
+        
+        // Convert markdown code blocks
+        let formatted = text.replace(/```(\w*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+        
+        // Convert inline code
+        formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Convert newlines
+        formatted = formatted.replace(/\n/g, '<br>');
+        
+        // Escape HTML
+        formatted = escapeHTML(formatted);
+        
+        return formatted;
+    }
+
+    function escapeHTML(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function scrollToBottom() {
+        const historyDiv = document.getElementById('chatHistory');
+        historyDiv.scrollTop = historyDiv.scrollHeight;
+    }
+
+    function updateSessionName(text) {
+        const session = sessions.find(s => s.id === currentSessionId);
+        if (session) {
+            session.name = text.length > 20 ? text.substring(0, 20) + "..." : text;
+            renderSessionList();
+        }
+    }
 
     function renderSessionList() {
         const listContainer = document.getElementById('sessionList');
         listContainer.innerHTML = "";
-
 
         sessions.slice().reverse().forEach(session => {
             const div = document.createElement('div');
@@ -460,255 +1120,107 @@ DOCTYPE html>
         });
     }
 
-
-    function updateSessionName(text) {
-        const session = sessions.find(s => s.id === currentSessionId);
-        if (session && session.logs.length === 1) { // Only rename on first message
-            // Take first 20 chars
-            session.name = text.length > 20 ? text.substring(0, 20) + "..." : text;
-            renderSessionList();
-        }
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        updatePrimaryButtonColor();
     }
 
-
-    // --- CHAT LOGIC ---
-
-
-    function handleEnter(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
-
-
-    function handleFileSelect() {
-        const fileInput = document.getElementById('mediaUpload');
-        const indicator = document.getElementById('fileIndicator');
-       
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-           
-            reader.onload = function(e) {
-                currentFileBase64 = e.target.result;
-                currentFileType = file.type;
-                indicator.style.display = 'block';
-                indicator.innerText = isVideo(file.type) ? "Video Attached" : "Image Attached";
-            };
-           
-            reader.readAsDataURL(file);
-        }
-    }
-
-
-    function isVideo(mimeType) {
-        return mimeType && mimeType.includes('video');
-    }
-
-
-    async function sendMessage() {
+    // --- BONUS: ASK ALL AIs FUNCTION ---
+    async function askAllAIs() {
         const input = document.getElementById('userInput');
-        const mode = document.getElementById('modeSelect').value;
         const text = input.value;
-       
-        if (!text && !currentFileBase64) return;
-
-
-        // 1. Get Current Session
+        if (!text) return;
+        
+        const originalAI = currentAI;
         const session = sessions.find(s => s.id === currentSessionId);
         if (!session) return;
-
-
-        // 2. Render User Message
+        
+        // Add user message once
         const userMsg = {
+            ai: 'all',
             role: "user",
-            content: text,
-            mode: mode,
-            media: currentFileBase64,
-            mediaType: currentFileType
+            content: text
         };
-       
+        
         addMessageToUI(userMsg);
         session.logs.push(userMsg);
-       
-        // Update name if this is the first user message
-        if (session.logs.filter(m => m.role === 'user').length === 1) {
-            updateSessionName(text || "Image Upload");
-        }
-
-
-        // Clear Inputs
+        
         input.value = "";
-        document.getElementById('mediaUpload').value = "";
-        document.getElementById('fileIndicator').style.display = 'none';
-        let tempMedia = currentFileBase64;
-        let tempType = currentFileType;
-        currentFileBase64 = null;
-        currentFileType = null;
-
-
-        // 3. Show Loading Indicator
-        const loadingId = "loading-" + Date.now();
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'message ai';
-        loadingDiv.id = loadingId;
-        loadingDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-        document.getElementById('chatHistory').appendChild(loadingDiv);
-        scrollToBottom();
-
-
-        // 4. Prepare API Call
-        try {
-            let modelId = "llama-3.3-70b-versatile";
-            if (tempMedia && !isVideo(tempType)) {
-                modelId = "llama-3.2-11b-vision-preview";
-            } else if (mode === "thinking") {
-                modelId = "llama-3.3-70b-versatile";
+        
+        // Ask all AIs
+        const ais = ['gemini', 'groq', 'deepseek'];
+        for (const ai of ais) {
+            // Skip if no API key (except Groq which we have)
+            if (!getAPIKey(ai) && ai !== 'groq') {
+                addMessageToUI({
+                    ai: ai,
+                    role: "ai",
+                    content: `Skipped: No API key configured for ${ai}.`
+                });
+                continue;
             }
-
-
-            let systemInstruction = "You are a helpful assistant.";
-            if (mode === "coding") systemInstruction = "You are an expert software engineer. Provide clean, efficient code blocks.";
-            if (mode === "stock") systemInstruction = "You are a financial analyst.";
-            if (mode === "thinking") systemInstruction = "You are a deep thinking engine. Break down the problem step-by-step.";
-            if (mode === "fast") systemInstruction = "Be concise.";
-
-
-            let messagesPayload = [
-                { role: "system", content: systemInstruction }
-            ];
-
-
-            if (tempMedia && modelId.includes("vision")) {
-                messagesPayload.push({
-                    role: "user",
-                    content: [
-                        { type: "text", text: text || "Analyze this image." },
-                        { type: "image_url", image_url: { url: tempMedia } }
-                    ]
-                });
-            } else {
-                let finalText = text;
-                if (tempMedia && isVideo(tempType)) finalText += " [User uploaded a video - display only]";
-               
-                // Get session history
-                const recentHistory = session.logs.filter(m => m.role !== 'system').slice(-4);
-                recentHistory.forEach(m => {
-                    messagesPayload.push({
-                        role: m.role === 'user' ? 'user' : 'assistant',
-                        content: m.content
-                    });
-                });
-               
-                if (messagesPayload[messagesPayload.length-1].content !== finalText) {
-                     messagesPayload.push({ role: "user", content: finalText });
+            
+            showLoadingIndicator(ai);
+            
+            try {
+                let response;
+                const mode = document.getElementById('modeSelect').value;
+                
+                // Create a temporary session for each AI to maintain context
+                const tempSession = { logs: session.logs.filter(m => m.ai === ai) };
+                
+                if (ai === 'gemini') {
+                    response = await callGeminiAPI(text, null, null, mode, tempSession);
+                } else if (ai === 'groq') {
+                    response = await callGroqAPI(text, mode, tempSession);
+                } else if (ai === 'deepseek') {
+                    response = await callDeepSeekAPI(text, mode, tempSession);
                 }
-            }
-
-
-            const targetUrl = encodeURIComponent(GROQ_ENDPOINT);
-           
-            const response = await fetch(PROXY_URL + targetUrl, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: modelId,
-                    messages: messagesPayload,
-                    temperature: 0.7
-                })
-            });
-
-
-            if (!response.ok) throw new Error("API Error");
-
-
-            const data = await response.json();
-            const aiText = data.choices[0].message.content;
-
-
-            document.getElementById(loadingId).remove();
-           
-            const aiMsg = {
-                role: "ai",
-                content: aiText,
-                mode: mode
-            };
-           
-            addMessageToUI(aiMsg);
-            session.logs.push(aiMsg);
-
-
-        } catch (error) {
-            document.getElementById(loadingId).remove();
-            addMessageToUI({
-                role: "ai",
-                content: "Error: Connection failed. Please check your internet or proxy settings.",
-                mode: "SYSTEM"
-            });
-            console.error(error);
-        }
-    }
-
-
-    function addMessageToUI(msg) {
-        const historyDiv = document.getElementById('chatHistory');
-        const div = document.createElement('div');
-        div.className = `message ${msg.role === 'user' ? 'user' : 'ai'}`;
-       
-        let html = `<div class="mode-badge">${msg.mode ? msg.mode : 'AI'}</div>`;
-       
-        if (msg.media) {
-            if (msg.mediaType && msg.mediaType.includes('video')) {
-                html += `<video src="${msg.media}" controls class="media-preview"></video><br>`;
-            } else {
-                html += `<img src="${msg.media}" class="media-preview"><br>`;
+                
+                removeLoadingIndicator();
+                
+                const aiMsg = {
+                    ai: ai,
+                    role: "ai",
+                    content: response
+                };
+                
+                addMessageToUI(aiMsg);
+                session.logs.push(aiMsg);
+                
+            } catch (error) {
+                removeLoadingIndicator();
+                addMessageToUI({
+                    ai: ai,
+                    role: "ai",
+                    content: `Error with ${ai}: ${error.message}`
+                });
+                console.error(`Error with ${ai}:`, error);
             }
         }
-       
-        let formattedText = msg.content
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/```(\w*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-            .replace(/\n/g, "<br>");
-
-
-        html += `<div>${formattedText}</div>`;
-       
-        div.innerHTML = html;
-        historyDiv.appendChild(div);
-        scrollToBottom();
+        
+        currentAI = originalAI;
+        switchAI(originalAI);
     }
 
-
-    function scrollToBottom() {
-        const historyDiv = document.getElementById('chatHistory');
-        historyDiv.scrollTop = historyDiv.scrollHeight;
-    }
-
-
-    // --- SAVE/LOAD ALL CHATS ---
-
-
+    // --- SAVE/LOAD FUNCTIONS ---
     function exportAllChats() {
         const jsonStr = JSON.stringify(sessions);
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-       
+        
         const a = document.createElement('a');
         a.href = url;
-        a.download = `all_chats_${new Date().toISOString().slice(0,10)}.json`;
+        a.download = `ai_chats_${new Date().toISOString().slice(0,10)}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
 
-
     function importAllChats(event) {
         const file = event.target.files[0];
         if (!file) return;
-
 
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -720,15 +1232,14 @@ DOCTYPE html>
                 } else {
                     startNewChat();
                 }
-                alert("All chats loaded!");
+                alert("Chats loaded successfully!");
             } catch (err) {
-                alert("Error loading file.");
+                alert("Error loading file: " + err.message);
             }
         };
         reader.readAsText(file);
     }
 </script>
-
 
 </body>
 </html>
