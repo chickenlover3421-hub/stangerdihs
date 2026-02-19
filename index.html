@@ -505,13 +505,13 @@
         <label>API Keys</label>
         <input type="text" id="groqKey" class="api-key-input" 
                placeholder="Groq API Key (Required)" 
-               value="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">
+               value="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">
         <input type="text" id="geminiKey" class="api-key-input" 
-               placeholder="Gemini API Key (Optional)">
-        <!-- Pre-filled with your DeepSeek API key -->
+               placeholder="Gemini API Key (Optional)"
+               value="AIzaSyA_Irbw-rfoNT1df8HMLeUIc0ToS5prqZc">
         <input type="text" id="deepseekKey" class="api-key-input" 
                placeholder="DeepSeek API Key (Optional)"
-               value="sk-7eba22a0139c49719a620a634c3418f5">
+               value="sk-3f0c768187654bd09bdfbf9daba7c9a3">
     </div>
 
     <!-- Groq Model Selector -->
@@ -569,7 +569,7 @@
         <select id="geminiModelSelect">
             <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
             <option value="gemini-2.0-pro-exp">gemini-2.0-pro-exp</option>
-            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-flash" selected>gemini-1.5-flash</option>
             <option value="gemini-1.5-pro">gemini-1.5-pro</option>
         </select>
     </div>
@@ -633,7 +633,7 @@
                 <div class="ai-icon gemini">G</div>
                 <div class="ai-name">Gemini</div>
             </div>
-            <div>Welcome! I'm your AI assistant. Choose between <strong>Gemini</strong>, <strong>Groq</strong>, or <strong>DeepSeek</strong> from the sidebar.</div>
+            <div>Welcome! I'm your AI assistant. Choose between <strong>Gemini</strong>, <strong>Groq</strong>, or <strong>DeepSeek</strong> from the sidebar. (Gemini model default: gemini-1.5-flash)</div>
         </div>
     </div>
 
@@ -663,9 +663,9 @@
         loadAPIKeys();
         updatePrimaryButtonColor();
         
-        // Set default models
+        // Set default models (Gemini set to 1.5-flash, which is widely available)
         document.getElementById('groqModelSelect').value = 'llama-3.3-70b-versatile';
-        document.getElementById('geminiModelSelect').value = 'gemini-2.0-flash-exp';
+        document.getElementById('geminiModelSelect').value = 'gemini-1.5-flash';
         document.getElementById('deepseekModelSelect').value = 'deepseek-chat';
     };
 
@@ -694,15 +694,15 @@
         }
     }
 
-    // --- API KEY MANAGEMENT ---
+    // --- API KEY MANAGEMENT (fixed) ---
     function loadAPIKeys() {
         const geminiKey = localStorage.getItem('geminiKey');
         const groqKey = localStorage.getItem('groqKey');
         const deepseekKey = localStorage.getItem('deepseekKey');
         
-        if (geminiKey) document.getElementById('geminiKey').value = AIzaSyA_Irbw-rfoNT1df8HMLeUIc0ToS5prqZc;
-        if (groqKey) document.getElementById('groqKey').value = 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;
-        if (deepseekKey) document.getElementById('deepseekKey').value = sk-f4c10e57a84c4655863ddcacd85c3d1e;
+        if (geminiKey) document.getElementById('geminiKey').value = geminiKey;
+        if (groqKey) document.getElementById('groqKey').value = groqKey;
+        if (deepseekKey) document.getElementById('deepseekKey').value = deepseekKey;
         
         // Save on change
         document.getElementById('geminiKey').addEventListener('change', saveAPIKeys);
