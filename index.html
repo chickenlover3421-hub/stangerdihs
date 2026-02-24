@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Studio • Vision‑Powered (OpenAI + Gemini)</title>
+    <title>AI Studio • All Models via Sambanova</title>
     <script type="importmap">
         { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
     </script>
@@ -22,7 +22,6 @@
             --accent-gemini: #4285f4;
             --accent-groq: #9d4edd;
             --accent-sambanova: #f97316;
-            --accent-openai: #10a37f;
             --border-light: #e2e8f0;
             --user-bubble: #3b82f6;
             --ai-bubble: #ffffff;
@@ -71,7 +70,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--accent-openai);
+            color: var(--accent-sambanova);
             letter-spacing: -0.02em;
         }
         .logo span { font-size: 1.8rem; }
@@ -111,7 +110,6 @@
         .model-btn.gemini   { color: var(--accent-gemini); }
         .model-btn.groq     { color: var(--accent-groq); }
         .model-btn.sambanova { color: var(--accent-sambanova); }
-        .model-btn.openai    { color: var(--accent-openai); }
 
         .control-group {
             display: flex;
@@ -222,7 +220,6 @@
         .message.ai.gemini    { border-left: 6px solid var(--accent-gemini); }
         .message.ai.groq      { border-left: 6px solid var(--accent-groq); }
         .message.ai.sambanova { border-left: 6px solid var(--accent-sambanova); }
-        .message.ai.openai    { border-left: 6px solid var(--accent-openai); }
         .ai-header {
             display: flex;
             align-items: center;
@@ -324,7 +321,7 @@
         }
         .file-indicator {
             font-size: 0.85rem;
-            color: var(--accent-openai);
+            color: var(--accent-sambanova);
             padding: 6px 14px;
             background: var(--sidebar-bg);
             border-radius: 40px;
@@ -346,7 +343,6 @@
         .typing-indicator.gemini span    { background: var(--accent-gemini); }
         .typing-indicator.groq span      { background: var(--accent-groq); }
         .typing-indicator.sambanova span { background: var(--accent-sambanova); }
-        .typing-indicator.openai span    { background: var(--accent-openai); }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typing {
@@ -360,69 +356,83 @@
 <body class="dark-mode">
 
 <div class="sidebar">
-    <div class="logo"><span>📸</span> AI Homework Helper</div>
+    <div class="logo"><span>🧠</span> AI Studio – via Sambanova</div>
 
     <div class="ai-model-selector">
-        <button class="model-btn openai active" onclick="switchAI('openai')"><span>🟢</span> OpenAI Vision (gpt-4o)</button>
-        <button class="model-btn gemini" onclick="switchAI('gemini')"><span>🔷</span> Gemini Vision (free)</button>
-        <button class="model-btn sambanova" onclick="switchAI('sambanova')"><span>🍊</span> Sambanova (DeepSeek, Llama)</button>
-        <button class="model-btn groq" onclick="switchAI('groq')"><span>⚡</span> Groq (text only)</button>
+        <button class="model-btn sambanova active" onclick="switchAI('sambanova')"><span>🍊</span> Sambanova (all models)</button>
+        <button class="model-btn gemini" onclick="switchAI('gemini')"><span>🔷</span> Google Gemini</button>
+        <button class="model-btn groq" onclick="switchAI('groq')"><span>⚡</span> Groq</button>
     </div>
 
     <div class="control-group">
         <label>🔑 API Keys</label>
-        <input type="text" id="openaiKey" class="api-key-input" placeholder="OpenAI API Key" value="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">
-        <input type="text" id="geminiKey" class="api-key-input" placeholder="Gemini API Key" value="AIzaSyA_Irbw-rfoNT1df8HMLeUIc0ToS5prqZc">
         <input type="text" id="sambanovaKey" class="api-key-input" placeholder="Sambanova API Key" value="6f902130-5baa-4dd9-ac02-b3e82ee073b5">
+        <input type="text" id="geminiKey" class="api-key-input" placeholder="Gemini API Key" value="AIzaSyA_Irbw-rfoNT1df8HMLeUIc0ToS5prqZc">
         <input type="text" id="groqKey" class="api-key-input" placeholder="Groq API Key" value="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">
     </div>
 
-    <!-- OpenAI Model Selector (current vision models) -->
+    <!-- SAMBANOVA MODELS – includes all from your screenshot (DeepSeek, Llama, Qwen, etc.) -->
     <div class="control-group">
-        <label>OpenAI Model (Vision)</label>
-        <select id="openaiModelSelect">
-            <option value="gpt-4o" selected>gpt-4o (recommended)</option>
-            <option value="gpt-4-turbo-2024-04-09">gpt-4-turbo (vision)</option>
-            <option value="gpt-4-vision-preview" disabled>gpt-4-vision-preview (deprecated)</option>
+        <label>Sambanova Model (includes DeepSeek)</label>
+        <select id="sambanovaModelSelect">
+            <optgroup label="Reasoning">
+                <option value="DeepSeek-R1-0528">DeepSeek-R1-0528 (671B)</option>
+                <option value="DeepSeek-R1-Distill-Llama-70B">DeepSeek-R1-Distill-Llama-70B</option>
+                <option value="DeepSeek-V3.1">DeepSeek-V3.1</option>
+                <option value="DeepSeek-V3.1-Terminus">DeepSeek-V3.1-Terminus</option>
+                <option value="gpt-oss-120b">gpt-oss-120b</option>
+                <option value="Qwen3-235B">Qwen3-235B</option>
+                <option value="Qwen3-32B">Qwen3-32B</option>
+            </optgroup>
+            <optgroup label="Text">
+                <option value="ALLaM-7B-Instruct-preview">ALLaM-7B-Instruct-preview</option>
+                <option value="DeepSeek-V3-0324">DeepSeek-V3-0324 (671B)</option>
+                <option value="DeepSeek-V3.1-cb">DeepSeek-V3.1-cb</option>
+                <option value="DeepSeek-V3.2">DeepSeek-V3.2</option>
+                <option value="Llama-3.3-Swallow-70B-Instruct-v0.4">Llama-3.3-Swallow-70B-Instruct-v0.4</option>
+                <option value="Meta-Llama-3.1-8B-Instruct">Meta-Llama-3.1-8B-Instruct</option>
+                <option value="Meta-Llama-3.3-70B-Instruct">Meta-Llama-3.3-70B-Instruct</option>
+                <option value="MiniMax-M2.5">MiniMax-M2.5</option>
+            </optgroup>
+            <optgroup label="Image/Text">
+                <option value="Llama-4-Maverick-17B-128E-Instruct">Llama-4-Maverick-17B-128E-Instruct</option>
+            </optgroup>
+            <optgroup label="Legacy/Other">
+                <option value="deepseek-chat">DeepSeek (latest)</option>
+                <option value="deepseek-coder">DeepSeek-Coder</option>
+                <option value="deepseek-reasoner">DeepSeek-Reasoner</option>
+                <option value="Qwen2.5-72B-Instruct">Qwen2.5-72B-Instruct</option>
+            </optgroup>
         </select>
     </div>
 
-    <!-- Gemini Model Selector -->
+    <!-- GROQ MODELS (optional) -->
     <div class="control-group">
-        <label>Gemini Model (Vision)</label>
+        <label>Groq Model</label>
+        <select id="groqModelSelect">
+            <optgroup label="Meta">
+                <option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile</option>
+                <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama-4-Maverick-17B-128E-Instruct</option>
+                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+            </optgroup>
+            <optgroup label="Groq">
+                <option value="groq/compound">groq/compound</option>
+                <option value="groq/compound-mini">groq/compound-mini</option>
+            </optgroup>
+            <optgroup label="OpenAI">
+                <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
+                <option value="whisper-large-v3">whisper-large-v3</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- GEMINI MODELS -->
+    <div class="control-group">
+        <label>Gemini Model</label>
         <select id="geminiModelSelect">
             <option value="gemini-1.5-flash" selected>gemini-1.5-flash</option>
             <option value="gemini-1.5-pro">gemini-1.5-pro</option>
             <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp</option>
-        </select>
-    </div>
-
-    <!-- Sambanova Model Selector (some may support images) -->
-    <div class="control-group">
-        <label>Sambanova Model</label>
-        <select id="sambanovaModelSelect">
-            <optgroup label="Reasoning">
-                <option value="DeepSeek-R1-0528">DeepSeek-R1-0528</option>
-                <option value="DeepSeek-R1-Distill-Llama-70B">DeepSeek-R1-Distill-Llama-70B</option>
-                <option value="DeepSeek-V3.1">DeepSeek-V3.1</option>
-            </optgroup>
-            <optgroup label="Text">
-                <option value="Meta-Llama-3.1-70B-Instruct" selected>Meta-Llama-3.1-70B-Instruct</option>
-                <option value="Meta-Llama-3.3-70B-Instruct">Meta-Llama-3.3-70B-Instruct</option>
-                <option value="DeepSeek-V3-0324">DeepSeek-V3-0324</option>
-            </optgroup>
-            <optgroup label="Vision (experimental)">
-                <option value="Llama-4-Maverick-17B-128E-Instruct">Llama-4-Maverick-17B-128E-Instruct</option>
-            </optgroup>
-        </select>
-    </div>
-
-    <!-- Groq Model Selector (text only) -->
-    <div class="control-group">
-        <label>Groq Model</label>
-        <select id="groqModelSelect">
-            <option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile</option>
-            <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
         </select>
     </div>
 
@@ -460,17 +470,17 @@
 
 <div class="chat-container">
     <div class="messages-area" id="chatHistory">
-        <div class="message ai openai">
-            <div class="ai-header"><div class="ai-icon openai">O</div><div class="ai-name">OpenAI Vision</div></div>
-            <div>Upload a photo of your homework and I'll solve it! (Make sure your OpenAI account has credits. Gemini is a free alternative.)</div>
+        <div class="message ai sambanova">
+            <div class="ai-header"><div class="ai-icon sambanova">S</div><div class="ai-name">Sambanova</div></div>
+            <div>Welcome! All DeepSeek models (R1, V3, V3.1, etc.) are now available here via Sambanova. Just select a model from the dropdown and start chatting!</div>
         </div>
     </div>
     <div class="input-area">
-        <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleFileSelect()">
-        <button class="upload-btn" onclick="document.getElementById('mediaUpload').click()" title="Attach photo">📸</button>
-        <div id="fileIndicator" class="file-indicator">No photo</div>
-        <input type="text" id="userInput" placeholder="Ask about the photo or type a question..." onkeypress="handleEnter(event)">
-        <button class="send-btn" onclick="sendMessage()" style="background:var(--accent-openai)">Send</button>
+        <input type="file" id="mediaUpload" accept="image/*, .txt, .pdf, .doc, .docx" style="display:none;" onchange="handleFileSelect()">
+        <button class="upload-btn" onclick="document.getElementById('mediaUpload').click()" title="Attach file">📎</button>
+        <div id="fileIndicator" class="file-indicator">No file</div>
+        <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleEnter(event)">
+        <button class="send-btn" onclick="sendMessage()" style="background:var(--accent-sambanova)">Send</button>
     </div>
 </div>
 
@@ -486,7 +496,7 @@
     window.handleFileSelect = handleFileSelect;
 
     // --- state ---
-    let currentAI = 'openai';
+    let currentAI = 'sambanova';  // default to Sambanova (covers DeepSeek)
     let sessions = [];
     let currentSessionId = null;
     let currentFileBase64 = null;
@@ -498,10 +508,9 @@
         loadAPIKeys();
         updatePrimaryButtonColor();
         // set default model selections
-        document.getElementById('openaiModelSelect').value = 'gpt-4o';
-        document.getElementById('geminiModelSelect').value = 'gemini-1.5-flash';
-        document.getElementById('sambanovaModelSelect').value = 'Meta-Llama-3.1-70B-Instruct';
+        document.getElementById('sambanovaModelSelect').value = 'DeepSeek-V3.1'; // example
         document.getElementById('groqModelSelect').value = 'llama-3.3-70b-versatile';
+        document.getElementById('geminiModelSelect').value = 'gemini-1.5-flash';
     };
 
     function switchAI(aiModel) {
@@ -513,29 +522,26 @@
     function updatePrimaryButtonColor() {
         const btn = document.querySelector('.send-btn');
         const colors = {
-            openai: 'var(--accent-openai)',
             gemini: 'var(--accent-gemini)',
-            sambanova: 'var(--accent-sambanova)',
-            groq: 'var(--accent-groq)'
+            groq: 'var(--accent-groq)',
+            sambanova: 'var(--accent-sambanova)'
         };
-        btn.style.backgroundColor = colors[currentAI] || 'var(--accent-openai)';
+        btn.style.backgroundColor = colors[currentAI] || 'var(--accent-sambanova)';
     }
 
     function loadAPIKeys() {
-        ['openai','gemini','sambanova','groq'].forEach(id => {
+        ['gemini','groq','sambanova'].forEach(id => {
             const saved = localStorage.getItem(id+'Key');
             if(saved) document.getElementById(id+'Key').value = saved;
         });
-        document.getElementById('openaiKey').addEventListener('change',saveAPIKeys);
         document.getElementById('geminiKey').addEventListener('change',saveAPIKeys);
-        document.getElementById('sambanovaKey').addEventListener('change',saveAPIKeys);
         document.getElementById('groqKey').addEventListener('change',saveAPIKeys);
+        document.getElementById('sambanovaKey').addEventListener('change',saveAPIKeys);
     }
     function saveAPIKeys() {
-        localStorage.setItem('openaiKey', document.getElementById('openaiKey').value);
         localStorage.setItem('geminiKey', document.getElementById('geminiKey').value);
-        localStorage.setItem('sambanovaKey', document.getElementById('sambanovaKey').value);
         localStorage.setItem('groqKey', document.getElementById('groqKey').value);
+        localStorage.setItem('sambanovaKey', document.getElementById('sambanovaKey').value);
     }
     function getAPIKey(ai) { return document.getElementById(ai+'Key')?.value || ''; }
 
@@ -551,7 +557,7 @@
         const historyDiv = document.getElementById('chatHistory');
         historyDiv.innerHTML = '';
         if(session.logs.length===0) {
-            addMessageToUI({ ai:'openai', role:'ai', content:'Ready for homework! Upload a photo or ask anything.' });
+            addMessageToUI({ ai:'sambanova', role:'ai', content:'New chat. Which model would you like to use? (All DeepSeek models are inside Sambanova now.)' });
         } else {
             session.logs.forEach(msg => addMessageToUI(msg));
         }
@@ -568,19 +574,14 @@
         const indicator = document.getElementById('fileIndicator');
         if(input.files.length) {
             const file = input.files[0];
-            if(!file.type.startsWith('image/')) {
-                alert('Please select an image file.');
-                input.value = '';
-                return;
-            }
-            if(file.size>20*1024*1024) { alert('Max 20MB'); input.value=''; return; }
+            if(file.size>5*1024*1024) { alert('Max 5MB'); input.value=''; return; }
             currentFileName = file.name;
             const reader = new FileReader();
             reader.onload = e => {
                 currentFileBase64 = e.target.result;
                 currentFileType = file.type;
                 indicator.style.display = 'inline-block';
-                indicator.innerText = `📸 ${currentFileName.slice(0,15)}…`;
+                indicator.innerText = `📄 ${currentFileName.slice(0,15)}…`;
             };
             reader.readAsDataURL(file);
         } else {
@@ -597,30 +598,22 @@
         const session = sessions.find(s=>s.id===currentSessionId);
         if(!session) return;
 
-        // If image and selected AI is Groq (text only), fallback to OpenAI or Gemini
+        // image fallback for Groq (if needed)
         let aiToUse = currentAI;
         let actualAI = currentAI;
         let warningNote = '';
         if(currentFileBase64 && currentAI==='groq') {
-            if(getAPIKey('openai')) {
-                aiToUse = 'openai';
-                actualAI = 'openai';
-                warningNote = '\n\n(Image handled by OpenAI)';
-            } else if(getAPIKey('gemini')) {
-                aiToUse = 'gemini';
-                actualAI = 'gemini';
-                warningNote = '\n\n(Image handled by Gemini)';
-            } else {
-                alert('Groq cannot see images. Please add an OpenAI or Gemini key, or switch to a vision model.');
-                return;
-            }
+            if(!getAPIKey('gemini')) { alert('Need Gemini key to handle image'); return; }
+            aiToUse = 'gemini';
+            actualAI = 'gemini';
+            warningNote = '\n\n(Image handled by Gemini)';
         }
 
         const userMsg = { ai:currentAI, role:'user', content:text, media:currentFileBase64, mediaType:currentFileType, fileName:currentFileName };
         addMessageToUI(userMsg);
         session.logs.push(userMsg);
         if(session.logs.filter(m=>m.role==='user').length===1) {
-            updateSessionName(text || currentFileName || 'photo');
+            updateSessionName(text || currentFileName || 'image');
         }
 
         input.value = '';
@@ -634,10 +627,9 @@
         try {
             let response;
             const mode = document.getElementById('modeSelect').value;
-            if(aiToUse==='openai') response = await callOpenAIVisionAPI(text, tempMedia, tempType, mode, session);
-            else if(aiToUse==='gemini') response = await callGeminiAPI(text, tempMedia, tempType, mode, session);
-            else if(aiToUse==='sambanova') response = await callSambanovaAPI(text, tempMedia, tempType, mode, session);
+            if(aiToUse==='gemini') response = await callGeminiAPI(text, tempMedia, tempType, mode, session);
             else if(aiToUse==='groq') response = await callGroqAPI(text, mode, session);
+            else if(aiToUse==='sambanova') response = await callSambanovaAPI(text, tempMedia, tempType, mode, session);
             removeLoadingIndicator();
             if(warningNote) response += warningNote;
             const aiMsg = { ai:actualAI, role:'ai', content:response };
@@ -645,62 +637,13 @@
             session.logs.push(aiMsg);
         } catch(e) {
             removeLoadingIndicator();
-            addMessageToUI({ ai:actualAI, role:'ai', content:`Error: ${e.message}` });
+            let errMsg = e.message;
+            addMessageToUI({ ai:actualAI, role:'ai', content:`Error: ${errMsg}` });
             console.error(e);
         }
     }
 
     // --- API implementations ---
-
-    // OpenAI Vision
-    async function callOpenAIVisionAPI(text, media, mediaType, mode, session) {
-        const apiKey = getAPIKey('openai');
-        if(!apiKey) throw new Error('OpenAI key missing');
-        const model = document.getElementById('openaiModelSelect').value;
-
-        const messages = [];
-        const recent = session.logs.filter(m=>m.ai==='openai').slice(-6);
-        recent.forEach(m => {
-            if(m.role === 'user') {
-                messages.push({ role: 'user', content: m.content });
-            } else {
-                messages.push({ role: 'assistant', content: m.content });
-            }
-        });
-
-        const content = [];
-        if(text) content.push({ type: 'text', text });
-        if(media && mediaType?.startsWith('image/')) {
-            content.push({ type: 'image_url', image_url: { url: media } });
-        }
-        if(content.length === 0) content.push({ type: 'text', text: 'What’s in this image?' });
-
-        messages.push({ role: 'user', content });
-
-        const payload = {
-            model: model,
-            messages: messages,
-            max_tokens: 4096,
-            temperature: mode==='creative'?0.9:mode==='fast'?0.5:0.7
-        };
-
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(payload)
-        });
-        if(!resp.ok) {
-            const err = await resp.text();
-            throw new Error(`OpenAI ${resp.status}: ${err}`);
-        }
-        const data = await resp.json();
-        return data.choices[0].message.content;
-    }
-
-    // Gemini
     async function callGeminiAPI(text, media, mediaType, mode, session) {
         const apiKey = getAPIKey('gemini');
         if(!apiKey) throw new Error('Gemini key missing');
@@ -735,7 +678,7 @@
             const b64 = media.split(',')[1];
             currentParts.push({ inlineData:{ mimeType:mediaType, data:b64 } });
         }
-        if(!currentParts.length && media) currentParts.push({ text:"What's in this image?" });
+        if(!currentParts.length && media) currentParts.push({ text:"Analyze this file." });
 
         if(history.length) {
             const chat = model.startChat({ history, generationConfig:{ temperature:mode==='creative'?0.9:mode==='fast'?0.5:0.7 }, systemInstruction:{ parts:[{ text:system }] } });
@@ -747,43 +690,6 @@
         }
     }
 
-    // Sambanova (vision support is experimental)
-    async function callSambanovaAPI(text, media, mediaType, mode, session) {
-        const apiKey = getAPIKey('sambanova');
-        if(!apiKey) throw new Error('Sambanova key missing');
-        const model = document.getElementById('sambanovaModelSelect').value;
-        const messages = [];
-        const recent = session.logs.filter(m=>m.ai==='sambanova').slice(-6);
-        recent.forEach(m=> messages.push({ role: m.role==='user'?'user':'assistant', content: m.content }));
-        let system = "You are a helpful assistant.";
-        if(mode==='coding') system = "You are an expert programmer.";
-        if(mode==='creative') system = "You are a creative writer.";
-        if(mode==='thinking') system = "Think step by step.";
-        if(mode==='fast') system = "Be concise.";
-        messages.unshift({ role:'system', content:system });
-
-        let content;
-        if (media && mediaType?.startsWith('image/')) {
-            content = [
-                { type: "text", text: text || "Describe this image." },
-                { type: "image_url", image_url: { url: media } }
-            ];
-        } else {
-            content = text || "Hello.";
-        }
-
-        messages.push({ role: 'user', content });
-
-        const resp = await fetch('https://api.sambanova.ai/v1/chat/completions', {
-            method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${apiKey}` },
-            body: JSON.stringify({ model, messages, max_tokens:4096, temperature: mode==='creative'?0.9:mode==='fast'?0.5:0.7 })
-        });
-        if(!resp.ok) throw new Error(`Sambanova ${resp.status}: ${await resp.text()}`);
-        const data = await resp.json();
-        return data.choices[0].message.content;
-    }
-
-    // Groq (text only)
     async function callGroqAPI(text, mode, session) {
         const apiKey = getAPIKey('groq');
         if(!apiKey) throw new Error('Groq key missing');
@@ -799,6 +705,44 @@
             body: JSON.stringify({ model, messages, temperature:temp, max_tokens:2048 })
         });
         if(!resp.ok) throw new Error(`Groq ${resp.status}: ${await resp.text()}`);
+        const data = await resp.json();
+        return data.choices[0].message.content;
+    }
+
+    // Sambanova API call – handles all models (including DeepSeek) via their endpoint
+    async function callSambanovaAPI(text, media, mediaType, mode, session) {
+        const apiKey = getAPIKey('sambanova');
+        if(!apiKey) throw new Error('Sambanova key missing');
+        const model = document.getElementById('sambanovaModelSelect').value;
+        const messages = [];
+        const recent = session.logs.filter(m=>m.ai==='sambanova').slice(-6);
+        recent.forEach(m=> messages.push({ role: m.role==='user'?'user':'assistant', content: m.content }));
+        let system = "You are a helpful assistant.";
+        if(mode==='coding') system = "You are an expert programmer.";
+        if(mode==='creative') system = "You are a creative writer.";
+        if(mode==='thinking') system = "Think step by step.";
+        if(mode==='fast') system = "Be concise.";
+        messages.unshift({ role:'system', content:system });
+
+        // For image support – Sambanova may support vision models (e.g., Llama-4)
+        let content;
+        if (media && mediaType?.startsWith('image/')) {
+            // Some Sambanova models might support images; we'll send as base64 URL
+            content = [
+                { type: "text", text: text || "Describe this image." },
+                { type: "image_url", image_url: { url: media } }
+            ];
+        } else {
+            content = text || "Hello.";
+        }
+
+        messages.push({ role: 'user', content });
+
+        const resp = await fetch('https://api.sambanova.ai/v1/chat/completions', {
+            method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${apiKey}` },
+            body: JSON.stringify({ model, messages, max_tokens:4096, temperature: mode==='creative'?0.9:mode==='fast'?0.5:0.7 })
+        });
+        if(!resp.ok) throw new Error(`Sambanova ${resp.status}: ${await resp.text()}`);
         const data = await resp.json();
         return data.choices[0].message.content;
     }
@@ -827,8 +771,8 @@
             }
             div.innerHTML = html;
         } else {
-            div.className = `message ai ${msg.ai||'openai'}`;
-            div.innerHTML = `<div class="ai-header"><div class="ai-icon ${msg.ai||'openai'}">${(msg.ai||'openai')[0].toUpperCase()}</div><div class="ai-name">${msg.ai||'AI'}</div></div><div>${formatMessage(msg.content||'')}</div>`;
+            div.className = `message ai ${msg.ai||'sambanova'}`;
+            div.innerHTML = `<div class="ai-header"><div class="ai-icon ${msg.ai||'sambanova'}">${(msg.ai||'sambanova')[0].toUpperCase()}</div><div class="ai-name">${msg.ai||'Sambanova'}</div></div><div>${formatMessage(msg.content||'')}</div>`;
         }
         history.appendChild(div);
         scrollToBottom();
@@ -881,7 +825,7 @@
         session.logs.push(userMsg);
         input.value = '';
 
-        const ais = ['openai','gemini','sambanova','groq'];
+        const ais = ['sambanova','gemini','groq'];
         for(let ai of ais) {
             if(!getAPIKey(ai) && ai!=='groq') {
                 addMessageToUI({ ai, role:'ai', content:`Skipped: no key for ${ai}` });
@@ -892,10 +836,9 @@
                 let response;
                 const mode = document.getElementById('modeSelect').value;
                 const tempSession = { logs: session.logs.filter(m=>m.ai===ai) };
-                if(ai==='openai') response = await callOpenAIVisionAPI(text, null, null, mode, tempSession);
-                else if(ai==='gemini') response = await callGeminiAPI(text, null, null, mode, tempSession);
-                else if(ai==='sambanova') response = await callSambanovaAPI(text, null, null, mode, tempSession);
+                if(ai==='gemini') response = await callGeminiAPI(text, null, null, mode, tempSession);
                 else if(ai==='groq') response = await callGroqAPI(text, mode, tempSession);
+                else if(ai==='sambanova') response = await callSambanovaAPI(text, null, null, mode, tempSession);
                 removeLoadingIndicator();
                 addMessageToUI({ ai, role:'ai', content:response });
                 session.logs.push({ ai, role:'ai', content:response });
